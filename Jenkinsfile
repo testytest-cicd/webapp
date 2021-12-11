@@ -14,6 +14,13 @@ pipeline {
                     ''' 
             }
         }
+        stage ('Check-Git-Secrets') {
+            steps {
+                sh 'rm trufflehog || true'
+                sh 'docker run dxa4481/trufflehog --json https://github.com/testytest-cicd/webapp.git > trufflehog'
+                sh 'cat trufflehog'
+      }
+    }
         stage ('Build') {
             steps {
                 sh 'mvn clean package'
