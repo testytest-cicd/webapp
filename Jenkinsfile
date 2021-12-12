@@ -21,7 +21,7 @@ pipeline {
                 sh 'cat trufflehog'
       }
     }
-	stage('Error') {
+	stage('1') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
@@ -38,7 +38,7 @@ pipeline {
         
       }
     }
-	stage('Error') {
+	stage('2') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
@@ -53,7 +53,7 @@ pipeline {
         }
       }
     }
-	stage('Error') {
+	stage('3') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
