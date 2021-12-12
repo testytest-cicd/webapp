@@ -21,13 +21,13 @@ pipeline {
                 sh 'cat trufflehog'
       }
     }
-		stage('Error') {
+	stage('Error') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
                 }
             }
-        }
+	}
         stage ('Source Composition Analysis') {
             steps {
                 sh 'rm owasp* || true'
@@ -38,7 +38,7 @@ pipeline {
         
       }
     }
-		stage('Error') {
+	stage('Error') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
@@ -53,7 +53,7 @@ pipeline {
         }
       }
     }
-		stage('Error') {
+	stage('Error') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh "exit 1"
