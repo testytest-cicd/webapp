@@ -21,12 +21,6 @@ pipeline {
         sh 'cat trufflehog'
         }
       }
-    stage ('Errors') {
-        when { catchError(stageResult: 'FAILURE') }
-          steps { 
-              sh 'exit 0' 
-        }
-      }
       stage('Source Composition Analysis') {
         steps {
           sh 'rm owasp* || true'
