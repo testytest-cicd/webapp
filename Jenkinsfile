@@ -22,8 +22,9 @@ pipeline {
         f(catchError) {
           stageResult: 'FAILURE' {
             sh "exit 1"
-          } else :
-            sh "exit 0"
+          } 
+        else {
+          sh "exit 0"
         }
       }
       stage('Source Composition Analysis') {
