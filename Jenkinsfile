@@ -7,11 +7,11 @@ pipeline {
     stage('Initialize') {
       steps {
         sh '''
-        
+
         echo "PATH = ${PATH}"
         echo "M2_HOME = ${M2_HOME}"
 
-        '''  
+        '''
       }
     }
     stage('Check-Git-Secrets') {
@@ -19,48 +19,50 @@ pipeline {
         sh 'rm trufflehog || true'
         sh 'docker run gesellix/trufflehog --json https://github.com/testytest-cicd/webapp.git > trufflehog'
         sh 'cat trufflehog'
-        catchError(stageResult: 'FAILURE') {
-          sh "exit 1"
+        f(catchError) {
+          stageResult: 'FAILURE' {
+            sh "exit 1"
+          } else :
+            sh "exit 0"
         }
       }
-    }
-    stage('Source Composition Analysis') {
-      steps {
-        sh 'rm owasp* || true'
-        sh 'wget "https://raw.githubusercontent.com/testytest-cicd/webapp/master/owasp-dependency-check.sh" '
-        sh 'chmod +x owasp-dependency-check.sh'
-        sh 'bash owasp-dependency-check.sh'
-        sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
+      stage('Source Composition Analysis') {
+        steps {
+          sh 'rm owasp* || true'
+          sh 'wget "https://raw.githubusercontent.com/testytest-cicd/webapp/master/owasp-dependency-check.sh" '
+          sh 'chmod +x owasp-dependency-check.sh'
+          sh 'bash owasp-dependency-check.sh'
+          sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
 
-      }
-    }
-    stage('SAST') {
-      steps {
-        withSonarQubeEnv('sonar') {
-          sh 'mvn sonar:sonar'
-          sh 'cat target/sonar/report-task.txt'
         }
       }
-    }
-    stage('Build') {
-      steps {
-        sh 'mvn clean package'
+      stage('SAST') {
+        steps {
+          withSonarQubeEnv('sonar') {
+            sh 'mvn sonar:sonar'
+            sh 'cat target/sonar/report-task.txt'
+          }
+        }
       }
-    }
+      stage('Build') {
+        steps {
+          sh 'mvn clean package'
+        }
+      }
 
-    stage('Deploy-To-Tomcat') {
-      steps {
-        sshagent(['tomcat']) {
-          sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.70.77.206:/opt/tomcat/webapps/webapp.war'
+      stage('Deploy-To-Tomcat') {
+        steps {
+          sshagent(['tomcat']) {
+            sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.70.77.206:/opt/tomcat/webapps/webapp.war'
+          }
         }
       }
-    }
-    stage('DAST') {
-      steps {
-        sshagent(['zap']) {
-          sh 'ssh -o  StrictHostKeyChecking=no ubuntu@3.70.77.206 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://3.70.77.206:8080/webapp/" || true'
+      stage('DAST') {
+        steps {
+          sshagent(['zap']) {
+            sh 'ssh -o  StrictHostKeyChecking=no ubuntu@3.70.77.206 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://3.70.77.206:8080/webapp/" || true'
+          }
         }
       }
     }
   }
-}
