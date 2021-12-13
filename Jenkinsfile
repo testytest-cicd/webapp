@@ -21,6 +21,13 @@ pipeline {
         sh 'cat trufflehog'
         }
       }
+      steps {
+        catchError {
+            build job: 'system-check-flow'
+        }
+        echo currentBuild.result
+    }
+}
       stage('Source Composition Analysis') {
         steps {
           sh 'rm owasp* || true'
