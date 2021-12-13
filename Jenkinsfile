@@ -34,7 +34,7 @@ pipeline {
       stage('SAST') {
         steps {
           withSonarQubeEnv('sonar') {
-            sh 'mvn sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.issuesReport.html.enable=true'
+            sh 'mvn sonar:sonar -Dsonar.issuesReport.html.enable=true'
           }
         }
       }
