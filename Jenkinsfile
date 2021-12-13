@@ -19,7 +19,7 @@ pipeline {
                 sh 'rm trufflehog || true'
                 sh 'docker run gesellix/trufflehog --json https://github.com/testytest-cicd/webapp.git > trufflehog'
                 sh 'cat trufflehog'
-		catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+		catchError(stageResult: 'FAILURE') {
                 	sh "exit 1"
 		}
       }
