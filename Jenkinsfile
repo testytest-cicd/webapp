@@ -31,6 +31,12 @@ pipeline {
 
         }
       }
+      stage ('Errors') {
+        when { catchError(stageResult: 'FAILURE') }
+          steps { 
+              sh 'exit 0' 
+        }
+      }
       stage('SAST') {
         steps {
           withSonarQubeEnv('sonar') {
