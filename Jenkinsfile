@@ -21,6 +21,12 @@ pipeline {
         sh 'cat trufflehog'
         }
       }
+    stage ('Errors') {
+        when { catchError(stageResult: 'FAILURE') }
+          steps { 
+              sh 'exit 0' 
+        }
+      }
       stage('Source Composition Analysis') {
         steps {
           sh 'rm owasp* || true'
@@ -31,16 +37,11 @@ pipeline {
 
         }
       }
-      stage ('Errors') {
-        when { catchError(stageResult: 'FAILURE') }
-          steps { 
-              sh 'exit 0' 
-        }
-      }
       stage('SAST') {
         steps {
           withSonarQubeEnv('sonar') {
-            sh 'mvn sonar:sonar -Dsonar.issuesReport.html.enable=true'
+            sh 'mvn sonar:sonar'
+            sh 'cat target/sonar/report-task.txt'
           }
         }
       }
