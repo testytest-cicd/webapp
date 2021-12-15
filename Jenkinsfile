@@ -19,6 +19,7 @@ pipeline {
         sh 'rm trufflehog || true'
         sh 'docker run gesellix/trufflehog --json https://github.com/testytest-cicd/webapp.git > trufflehog'
         sh 'cat trufflehog'
+        sh 'exit 0'
       }
     }
   stage('Source Composition Analysis') {
